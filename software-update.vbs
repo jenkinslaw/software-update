@@ -461,6 +461,48 @@ ElseIf blnIsSilent Then
 End If
 
 
+'---------------------------------------------------------------
+'INSTALL LMI
+'---------------------------------------------------------------
+'If the LMI folder doesn't already exist, install the software.
+
+Dim blnInstalled
+blnInstalled = False
+
+WriteLogFile "Detecting LogMeIn.", strScriptLog
+
+If DoesFolderExist("C:\Program Files\LogMeIn") Then
+    blnInstalled = True
+    WriteLogFile "Detected LMI. Install canceled.", strScriptLog
+End If
+If DoesFolderExist("C:\Program Files (x86)\LogMeIn") Then
+    blnInstalled = True
+    WriteLogFile "Detected LMI. Install canceled.", strScriptLog
+End If
+
+If blnInstalled = False Then
+
+    Dim strLMIPath, strLMICommand
+    
+    strLMIPath = _
+    "\\jll-dc01\d$\JLL_staff\data\IT-Info\Login\software-updates\LogMeIn.msi"
+
+    strLMICommand = _
+    "msiexec.exe /i " & strLMIPath & " /quiet " &_
+    "DEPLOYID=00_0boc5dynk6psnvrzkc3c9pao36hzhzu9udkb1 " &_
+    "INSTALLMETHOD=5 FQDNDESC=1"
+    
+    WriteLogFile "LMI not detected. Installing.", strScriptLog
+    WriteLogFile "strLMIPath=" & strLMIPath, strScriptLog
+    WriteLogFile "strLMICommand=" & strLMICommand, strScriptLog
+
+    Set objWshShell = WScript.CreateObject("WScript.Shell")
+    strStatusCode = objWshShell.Run(strLMICommand)
+    WriteLogFile "LMI Installation finished. strStatusCode:" _
+                  & strStatusCode, strScriptLog
+
+End If
+
 WriteLogFile "Script done.", strScriptLog
                 
                 
